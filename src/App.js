@@ -2,7 +2,7 @@ import logo from './logo.svg';
 import './App.css';
 import React, { Component } from "react";
 import axios from "axios";
-import Pusher from "pusher";
+import Pusher from "pusher-js";
 import ChartList from "./ChatList";
 import ChatBox from "./ChatBox";
 
@@ -13,21 +13,24 @@ class App extends Component {
       text: '',
       username : '',
       chats : []
-    }
+    };
+    this.handleTextChange = this.handleTextChange.bind(this);
   }
   componentDidMount(){
     const username =window.prompt('User name', 'Steph');
-    this.state({username});
+    //updated here
+    this.setState({username});
     const pusher = new Pusher('59493bc8aff2ed5d98da',{
       cluster: 'ap2',
       encrypted: true
     });
 
+    //rather unusual
     const channel =pusher.subscribe('chat');
     channel.bind('message', data =>{
       this.setState({chats: [...this.state.chats, data], test: ''})
     })
-    this.handleTextChange = this.handleTextChange.bind(this);
+    // this.handleTextChange = this.handleTextChange.bind(this);
   }
   handleTextChange(e){
     if(e.keyCode===13){
@@ -36,8 +39,10 @@ class App extends Component {
         message: this.state.text
       };
       axios.post('http://localhost:5000/message', payload)
+      console.log("post data", payload)
     }else{
-      this.setState({text: this.target.value})
+      //changed the this to e
+      this.setState({text: e.target.value})
     }
   }
   render(){
@@ -58,27 +63,4 @@ class App extends Component {
     )
   }
 }
-
-
-// function App() {
-//   return (
-//     <div className="App">
-//       <header className="App-header">
-//         <img src={logo} className="App-logo" alt="logo" />
-//         <p>
-//           Edit <code>src/App.js</code> and save to reload.
-//         </p>
-//         <a
-//           className="App-link"
-//           href="https://reactjs.org"
-//           target="_blank"
-//           rel="noopener noreferrer"
-//         >
-//           Learn React
-//         </a>
-//       </header>
-//     </div>
-//   );
-// }
-
 export default App;
